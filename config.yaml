@@ -1,0 +1,49 @@
+# Server startup configuration
+startup:
+  title: ExampleAPI
+  port: 9001
+  version: 1.0.0
+  load: true
+  cors:
+    allow_origins:
+      - "*"
+    allow_methods:
+      - "*"
+    allow_headers:
+      - "*"
+    allow_credentials: true
+routes:
+  # This endpoint returns static user data
+  - path: /users
+    method: GET
+    source:
+      type: static
+      data:
+        users:
+          - id: 1
+            name: Simon
+            roles:
+              - admin
+              - editor
+            profile:
+              age: 30
+              location: Liverpool
+          - id: 2
+            name: Morgan
+            roles:
+              - viewer
+            profile:
+              age: 25
+              location: Manchester
+  # This proxies a cat fact API
+  - path: /cat-fact
+    method: GET
+    source:
+      type: proxy
+      url: https://catfact.ninja/fact
+  # This return the request body
+  - path: /submit
+    method: POST
+    source:
+      type: echo
+      description: Return posted JSON data
