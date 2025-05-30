@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from http_handlers import static_handler, proxy_handler, echo_handler
 from middlewares.rate_limiter import RateLimiterMiddleware
+from middlewares.authentication import AuthMiddleware
 
 
 def build_routes(app, routes):
@@ -14,6 +15,8 @@ def build_routes(app, routes):
         rate_limit: bool = route.get("limit_rate", False)
         rate_limit_count: int = route.get("limit_count", 0)
         rate_limit_window: int = route.get("limit_window", 0)
+        auth = route.get("auth", False)
+        auth_token = route.get("auth_token", True)
 
         # Static
         if source_type == "static":
@@ -36,5 +39,9 @@ def build_routes(app, routes):
                 max_requests=rate_limit_count,
                 window_seconds=rate_limit_window,
             )
+
+        # auth token
+        if auth:
+            app.add_middleware(AuthMiddleware, token=auth_token)
 
     app.include_router(router)

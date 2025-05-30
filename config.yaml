@@ -18,6 +18,8 @@ routes:
     limit_rate: true
     limit_count: 3
     limit_window: 10
+    auth: true
+    auth_token: 'b7_TXWszV9euIsfiT8F0S7z-dtxd3nD5w5MQ5bPg2FI'
     source:
       type: static
       data:

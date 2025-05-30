@@ -24,7 +24,7 @@ class RateLimiterMiddleware(BaseHTTPMiddleware):
                 {"error": "Rate limit exceeded. Try again later."}, status_code=429
             )
 
-        # Log this request
+        # Store timestamp in request
         request_times.append(time_now)
         self.requests[identifier] = request_times
 
