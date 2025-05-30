@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Request
 from http_handlers import static_handler, proxy_handler, echo_handler
+from middlewares.rate_limiter import RateLimiterMiddleware
+
 
 def build_routes(app, routes):
     router = APIRouter()
@@ -9,6 +11,9 @@ def build_routes(app, routes):
         method = route["method"].upper()
         source = route["source"]
         source_type = source["type"]
+        rate_limit: bool = route.get("limit_rate", False)
+        rate_limit_count: int = route.get("limit_count", 0)
+        rate_limit_window: int = route.get("limit_window", 0)
 
         # Static
         if source_type == "static":
@@ -23,5 +28,13 @@ def build_routes(app, routes):
         # Echo
         elif source_type == "echo" and method == "POST":
             router.add_api_route(path, echo_handler, methods=["POST"])
+
+        # rate limiter
+        if rate_limit:
+            app.add_middleware(
+                RateLimiterMiddleware,
+                max_requests=rate_limit_count,
+                window_seconds=rate_limit_window,
+            )
 
     app.include_router(router)

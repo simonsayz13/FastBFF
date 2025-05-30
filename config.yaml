@@ -3,7 +3,6 @@ startup:
   title: ExampleAPI
   port: 9001
   version: 1.0.0
-  load: true
   cors:
     allow_origins:
       - "*"
@@ -16,6 +15,9 @@ routes:
   # This endpoint returns static user data
   - path: /users
     method: GET
+    limit_rate: true
+    limit_count: 3
+    limit_window: 10
     source:
       type: static
       data:
