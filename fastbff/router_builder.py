@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from http_handlers import static_handler, proxy_handler, echo_handler
-from middlewares.rate_limiter import RateLimiterMiddleware
-from middlewares.authentication import AuthMiddleware
+from fastbff.http_handlers import static_handler, proxy_handler, echo_handler
+from fastbff.middlewares.rate_limiter import RateLimiterMiddleware
+from fastbff.middlewares.authentication import AuthMiddleware
 
 
 def build_routes(app, routes):
