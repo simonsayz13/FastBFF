@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: fastbff
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: fastbff serve config.yaml
+    autoDeploy: true
+    plan: free
