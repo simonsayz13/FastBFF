@@ -7,12 +7,13 @@ name = "fastbff"
 version = "0.1.0"
 description = "Config-driven backend for frontend"
 readme = "README.md"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "Simon Tan" }]
 dependencies = [
     "fastapi",
     "uvicorn",
     "pyyaml",
-    "typer[all]"
+    "typer[all]",
+    "httpx"
 ]
 requires-python = ">=3.8"
 
