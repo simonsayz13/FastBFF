@@ -1,6 +1,8 @@
-# ⚡ FastBFF
+<p align="center">
+  <img src="assets/fastbff-banner.png" alt="FastBFF Banner" width="800" height="400"/>
+</p>
 
-**FastBFF** is a blazing-fast, configuration-driven **Backend-for-Frontend (BFF)** layer powered by [FastAPI](https://fastapi.tiangolo.com/). It lets you create REST APIs using just a simple YAML file — no boilerplate, no code, no nonsense.
+**FastBFF** is a blazing-fast, configuration-driven **Backend-for-Frontend (BFF)** layer built on top of [FastAPI](https://fastapi.tiangolo.com/). It enables frontend developers and teams to define fully working REST APIs using just a simple YAML configuration file with optional extensions like middleware, authentication, and rate-limiting.
 
 > "Stop writing backend glue — start shipping frontends faster."
 
@@ -8,26 +10,32 @@
 
 ## 🙌 Why FastBFF?
 
-Because your frontend team shouldn’t be blocked by API boilerplate. With FastBFF, you build the bridge between frontend and real data — fast.
+Because your frontend team shouldn’t be blocked by API scaffolding. FastBFF lets you:
+
+- Build backend routes quickly without writing code
+- Mock or proxy APIs during development
+- Define rate limits and token-based auth per route
+- Iterate rapidly using hot-reload mode
 
 ---
 
 ## 🚀 Features
 
-- 🧾 **YAML-Powered** — define your routes and logic with a single config file
-- ⚡ **FastAPI Under the Hood** — async-ready, performant, and auto-documented
-- 🪄 **Zero Code Endpoints** — serve static data, proxy APIs, or echo POST bodies
-- 🌍 **Built-in Config for Host, Port, CORS, Logging**
-- 🧩 **Pluggable Design** — easily extendable with custom Python logic
-- 🔁 **Hot Reload Dev Mode** — just edit your config and go
+- 🧾 **YAML-Powered** — define your endpoints and logic in a config file
+- ⚡ **FastAPI-Based** — async, fast, and production-ready
+- 🧪 **CLI Tooling** — validate config, init templates, start dev server
+- 🔐 **Built-in Middleware Support** — per-route auth, rate limiting, etc.
+- 🧩 **Extensible Core** — bring your own handlers or plug in logic
+- 📁 **Supports Static, Proxy, Echo** sources
 
 ---
 
 ## 📚 Requirements
 
-- Python 3.7+
-- pip (Python package installer)
-- Recommended: virtualenv for environment isolation
+- Python 3.8+
+- pip
+
+---
 
 ## ⚙️ Installation
 
@@ -35,15 +43,34 @@ Because your frontend team shouldn’t be blocked by API boilerplate. With FastB
 git clone https://github.com/simonsayz13/fastbff
 cd fastbff
 python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-python main.py
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install .
 ```
+
 ---
 
-## 🛠 Example
+## 🧰 CLI Usage
 
-Here’s a simple `config.yaml` to get you started:
+### Generate Config File
+
+```bash
+fastbff init example  # generates configs/example.yaml
+```
+### Validate Config
+
+```bash
+fastbff validate example
+```
+
+### Start Server
+
+```bash
+fastbff serve example --env dev/prod
+```
+
+---
+
+## 🛠 Example `example.yaml`
 
 ```yaml
 startup:
@@ -51,7 +78,7 @@ startup:
   port: 9000
   reload: true
   log_level: info
-  title: FastBFF
+  title: ExampleAPI
   version: 1.0.0
 
 routes:
@@ -75,42 +102,49 @@ routes:
     method: POST
     source:
       type: echo
+
+  - path: /secret
+    method: GET
+    source:
+      type: static
+      data:
+        msg: "top secret"
+    auth: true
+    auth_token: mysecrettoken
+    limit_rate: true
+    limit_count: 5
+    limit_window: 60
 ```
-
-Then just run:
-
-```bash
-python main.py
-```
-
-And you’ll get:
-
-- 📍 `GET /users` → returns predefined JSON
-- 🐱 `GET /cat-fact` → proxies to a live API
-- 🔁 `POST /submit` → echoes back your payload
 
 ---
 
-## 📦 Roadmap
+## 🌐 Deployment
+
+- ✅ Cloud-ready: works with Render, Fly.io, Railway, etc.
+- 👨‍💻 For local dev: use `--env dev` for `127.0.0.1`, `--env prod` for `0.0.0.0`
+- 🧪 Docker/CI/CD support coming soon
+
+---
+
+## 🧭 Roadmap
 
 - [ ] Support for additional HTTP methods (PUT, PATCH, DELETE, etc.)
 - [ ] Route validation & OpenAPI schema generation
 - [ ] Middleware (auth, rate-limiting, logging)
 - [ ] Config-driven response transformation
 - [ ] Support for loading external JSON/YAML files
-- [ ] CLI support (e.g. `fastbff run config.yaml`)
 
 ---
 
 ## 📄 License
 
-MIT — do whatever you want, but consider contributing back. ❤️
+MIT — do whatever you want, just don’t blame me. 😄
 
 ---
 
 ## ✨ Contributing
 
-PRs, issues, and feature requests welcome!
+PRs and feedback welcome. This is a weekend project growing fast — help shape it!
 
 ---
 
