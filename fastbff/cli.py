@@ -19,6 +19,7 @@ def validate():
 @app.command()
 def serve(
     config_path: str = typer.Argument("config.yaml", help="Path to config file"),
+    env: str = typer.Option("prod", help="Define production or env"),
     watch: bool = typer.Option(False, help="Enable auto-reload"),
 ):
     """Start the FastBFF REST server."""
@@ -35,7 +36,7 @@ def serve(
         raise typer.Exit(code=1)
 
     config = load_config(config_path)
-    app_instance, host, port, log_level = create_app(config)
+    app_instance, host, port, log_level = create_app(config, env)
     uvicorn.run(app_instance, host=host, port=port, log_level=log_level, reload=watch)
 
 

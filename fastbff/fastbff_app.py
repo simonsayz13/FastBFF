@@ -10,9 +10,9 @@ def load_config(config_path):
         return yaml.safe_load(f)
 
 
-def create_app(config):
+def create_app(config, env):
     startup_config = config.get("startup", {})
-    host = startup_config.get("host", "127.0.0.1")
+    host = "0.0.0.0" if env == "prod" else "127.0.0.1"
     port = startup_config.get("port", 8000)
     title = startup_config.get("title", "fastBFF")
     version = startup_config.get("version", "1.0.0")
