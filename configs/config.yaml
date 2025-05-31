@@ -1,7 +1,7 @@
 # Server startup configuration
 startup:
   title: ExampleAPI
-  port: 9001
+  port: 8000
   version: 1.0.0
   cors:
     allow_origins:
