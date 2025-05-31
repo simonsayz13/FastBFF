@@ -13,7 +13,7 @@ def load_config(config_path):
 def create_app(config, env):
     startup_config = config.get("startup", {})
     host = "0.0.0.0" if env == "prod" else "127.0.0.1"
-    port = startup_config.get("port", 8000)
+    port = startup_config.get("port", 4000)
     title = startup_config.get("title", "fastBFF")
     version = startup_config.get("version", "1.0.0")
 

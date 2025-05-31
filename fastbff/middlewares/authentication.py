@@ -1,22 +1,13 @@
-from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse
+from fastapi import HTTPException, Request
 
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app, token: str = ""):
-        super().__init__(app)
-        self.auth_token = token
-
-    async def dispatch(self, request: Request, next):
+def authentication(expected_token: str):
+    async def verify_token(request: Request):
         auth_header = request.headers.get("Authorization")
-
         if not auth_header or not auth_header.startswith("Bearer "):
-            return JSONResponse({"error": "Authorization required"}, status_code=401)
+            raise HTTPException(status_code=401, detail="Missing or invalid token")
+        token = auth_header.split("Bearer ")[1]
+        if token != expected_token:
+            raise HTTPException(status_code=403, detail="Unauthorized")
 
-        incoming_token = auth_header.split("Bearer ")[-1]
-
-        if incoming_token != self.auth_token:
-            return JSONResponse({"error": "Invalid token"}, status_code=401)
-
-        return await next(request)
+    return verify_token
