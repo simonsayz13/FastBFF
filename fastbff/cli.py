@@ -1,6 +1,7 @@
 import typer
 import uvicorn
 from fastbff.fastbff_app import create_app, load_config
+from fastbff.util.helper import generate_config_yaml
 import os
 
 app = typer.Typer()  # create the main app
@@ -9,6 +10,20 @@ app = typer.Typer()  # create the main app
 @app.command()
 def init():
     """Generate a starter config.yaml file."""
+
+    config_path = "config.yaml"
+
+    if os.path.exists(config_path):
+        typer.secho(
+            f"⚠️  '{config_path}' already exists. Aborting.", fg=typer.colors.YELLOW
+        )
+        raise typer.Exit(code=1)
+
+    generate_config_yaml()
+
+    typer.secho(
+        f"✅ Generated starter '{config_path}' successfully!", fg=typer.colors.GREEN
+    )
 
 
 @app.command()

@@ -13,7 +13,7 @@ def load_config(config_path):
 def create_app(config, env):
     startup_config = config.get("startup", {})
     host = "0.0.0.0" if env == "prod" else "127.0.0.1"
-    port = startup_config.get("port", 4000)
+    port = startup_config.get("port", 8000)
     title = startup_config.get("title", "fastBFF")
     version = startup_config.get("version", "1.0.0")
 
@@ -21,7 +21,7 @@ def create_app(config, env):
     async def lifespan(app: FastAPI):
         try:
             print(
-                f"{title} v{version} started successfully on http://{host}:{port}",
+                f"✅ {title} v{version} started successfully on http://{host}:{port}",
                 flush=True,
             )
             yield
