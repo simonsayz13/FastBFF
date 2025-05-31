@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastbff"
+version = "0.1.0"
+description = "Config-driven backend for frontend"
+readme = "README.md"
+authors = [{ name = "Simon Tan" }]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pyyaml",
+    "typer",
+    "rich",
+    "httpx"
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+fastbff = "fastbff.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]

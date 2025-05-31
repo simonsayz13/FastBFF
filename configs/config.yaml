@@ -1,7 +1,7 @@
 # Server startup configuration
 startup:
   title: ExampleAPI
-  port: 9001
+  port: 8000
   version: 1.0.0
   cors:
     allow_origins:
@@ -18,6 +18,8 @@ routes:
     limit_rate: true
     limit_count: 3
     limit_window: 10
+    auth: false
+    auth_token: 'b7_TXWszV9euIsfiT8F0S7z-dtxd3nD5w5MQ5bPg2FI'
     source:
       type: static
       data:
