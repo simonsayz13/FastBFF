@@ -1,27 +1,34 @@
+import os
 import typer
 import uvicorn
 import yaml
+from pathlib import Path
 from fastbff.fastbff_app import create_app, load_config
-from fastbff.util.helper import generate_config_yaml
-import os
+from fastbff.util.helper import generate_config_yaml, get_file_path
+from fastbff.util.helper import CONFIGS_DIR
 
 app = typer.Typer()  # create the main app
-CONFIG_FILE = "config.yaml"
+
+DEFAULT_CONFIG = "config"
 
 
 @app.command()
-def init():
-    """Generate a starter config.yaml file."""
+def init(config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file")):
+    """
+    Generate a starter YAML config file inside the 'configs/' directory.
+    """
+    os.makedirs(CONFIGS_DIR, exist_ok=True)
+    # Build full file path, extend to other file type such as json
 
-    config_path = CONFIG_FILE
+    config_path = get_file_path(config)
 
-    if os.path.exists(config_path):
+    if config_path.exists():
         typer.secho(
             f"⚠️  '{config_path}' already exists. Aborting.", fg=typer.colors.YELLOW
         )
         raise typer.Exit(code=1)
 
-    generate_config_yaml()
+    generate_config_yaml(config_path, config_name=config)
 
     typer.secho(
         f"✅ Generated starter '{config_path}' successfully!", fg=typer.colors.GREEN
@@ -29,8 +36,11 @@ def init():
 
 
 @app.command()
-def validate(config_path: str = CONFIG_FILE):
-    """Check if the config file is valid YAML and follows expected structure."""
+def validate(
+    config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file")
+):
+    config_path = get_file_path(config)
+
     if not os.path.exists(config_path):
         typer.secho(f"❌ Config file not found: {config_path}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
@@ -77,14 +87,17 @@ def validate(config_path: str = CONFIG_FILE):
 
 @app.command()
 def serve(
-    config_path: str = typer.Argument(CONFIG_FILE, help="Path to config file"),
+    config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file"),
     env: str = typer.Option("prod", help="Define production or env"),
     watch: bool = typer.Option(False, help="Enable auto-reload"),
 ):
+    config_path = get_file_path(config)
     """Start the FastBFF REST server."""
     if not os.path.exists(config_path):
         typer.secho(
-            f"❌ Config file not found: {config_path}", fg=typer.colors.RED, err=True
+            f"❌ Config file not found: {config_path}, use fastbff init <name> to initialise a config file.",
+            fg=typer.colors.RED,
+            err=True,
         )
         raise typer.Exit(code=1)
 
