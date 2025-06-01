@@ -1,0 +1,13 @@
+{
+  "startup": { "title": "JsonAPI", "version": "1.0.0", "port": 8000 },
+  "routes": [
+    {
+      "path": "/hello",
+      "method": "GET",
+      "source": {
+        "type": "static",
+        "data": [{ "message": "Welcome to FastBFF!" }]
+      }
+    }
+  ]
+}

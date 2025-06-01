@@ -1,3 +1,4 @@
+import json
 import yaml
 import sys
 from fastapi import FastAPI
@@ -7,7 +8,12 @@ from fastbff.router_builder import build_routes
 
 def load_config(config_path):
     with open(config_path, "r") as f:
-        return yaml.safe_load(f)
+        if config_path.endswith(".json"):
+            return json.load(f)
+        elif config_path.endswith((".yaml", ".yml")):
+            return yaml.safe_load(f)
+        else:
+            raise ValueError("Unsupported file extension. Use .json or .yaml")
 
 
 def create_app(config, env):
