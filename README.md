@@ -2,7 +2,7 @@
   <img src="assets/fastbff-banner.png" alt="FastBFF Banner" width="800" height="400"/>
 </p>
 
-**FastBFF** is a blazing-fast, configuration-driven **Backend-for-Frontend (BFF)** layer built on top of [FastAPI](https://fastapi.tiangolo.com/). It enables frontend developers and teams to define fully working REST APIs using just a simple YAML configuration file with optional extensions like middleware, authentication, and rate-limiting.
+**FastBFF** is a blazing-fast, configuration-driven **Backend-for-Frontend (BFF)** layer built on top of [FastAPI](https://fastapi.tiangolo.com/). It enables frontend developers and teams to define fully working REST APIs using just a simple YAML/JSON configuration file.
 
 > "Stop writing backend glue, start shipping frontends faster."
 
@@ -15,18 +15,15 @@ Because your frontend team shouldn’t be blocked by API scaffolding. FastBFF le
 - Build backend routes quickly without writing code
 - Mock or proxy APIs during development
 - Define rate limits and token-based auth per route
-- Iterate rapidly using hot-reload mode
 
 ---
 
 ## 🚀 Features
 
-- 🧾 **YAML-Powered** — define your endpoints and logic in a config file
+- 🧾 **YAML/JSON-Powered** — define your endpoints and logic in a config file
 - ⚡ **FastAPI-Based** — async, fast, and production-ready
 - 🧪 **CLI Tooling** — validate config, init templates, start dev server
 - 🔐 **Built-in Middleware Support** — per-route auth, rate limiting, etc.
-- 🧩 **Extensible Core** — bring your own handlers or plug in logic
-- 📁 **Supports Static, Proxy, Echo** sources
 
 ---
 
@@ -54,12 +51,12 @@ pip install .
 ### Generate Config File
 
 ```bash
-fastbff init example  # generates configs/example.yaml
+fastbff init example --type json # generates example.json in the config folder
 ```
 ### Validate Config
 
 ```bash
-fastbff validate example
+fastbff validate example # validates the config file
 ```
 
 ### Start Server
@@ -76,8 +73,6 @@ fastbff serve example --env dev/prod
 startup:
   host: 127.0.0.1
   port: 9000
-  reload: true
-  log_level: info
   title: ExampleAPI
   version: 1.0.0
 
@@ -128,24 +123,16 @@ routes:
 
 ## 🧭 Roadmap
 
+- [x] Support for loading external JSON/YAML files
 - [ ] Support for additional HTTP methods (PUT, PATCH, DELETE, etc.)
 - [ ] Route validation & OpenAPI schema generation
 - [ ] Middleware (auth, rate-limiting, logging)
 - [ ] Config-driven response transformation
-- [ ] Support for loading external JSON/YAML files
-
----
-
-## 📄 License
-
-MIT — do whatever you want, just don’t blame me. 😄
 
 ---
 
 ## ✨ Contributing
 
-PRs and feedback welcome. This is a weekend project growing fast — help shape it!
+PRs and feedback are very welcome. This is a weekend project growing fast, help shape it!
 
 ---
-
-Created by [Simon Tan](https://github.com/simonsayz13)
