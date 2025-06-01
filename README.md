@@ -4,7 +4,7 @@
 
 **FastBFF** is a blazing-fast, configuration-driven **Backend-for-Frontend (BFF)** layer built on top of [FastAPI](https://fastapi.tiangolo.com/). It enables frontend developers and teams to define fully working REST APIs using just a simple YAML configuration file with optional extensions like middleware, authentication, and rate-limiting.
 
-> "Stop writing backend glue — start shipping frontends faster."
+> "Stop writing backend glue, start shipping frontends faster."
 
 ---
 
