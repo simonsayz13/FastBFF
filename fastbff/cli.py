@@ -1,10 +1,16 @@
+import glob
 import os
 import typer
 import uvicorn
 import yaml
 from pathlib import Path
 from fastbff.fastbff_app import create_app, load_config
-from fastbff.util.helper import generate_config_yaml, get_file_path
+from fastbff.util.helper import (
+    check_existing_config,
+    check_valid_type,
+    generate_config,
+    get_file_path,
+)
 from fastbff.util.helper import CONFIGS_DIR
 
 app = typer.Typer()  # create the main app
@@ -13,25 +19,39 @@ DEFAULT_CONFIG = "config"
 
 
 @app.command()
-def init(config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file")):
+def init(
+    config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config"),
+    type: str = typer.Option(..., help="Type of config (yaml/json)"),
+):
     """
-    Generate a starter YAML config file inside the 'configs/' directory.
+    Generate a starter YAML/JSON config file inside the 'configs/' directory.
     """
+
     os.makedirs(CONFIGS_DIR, exist_ok=True)
-    # Build full file path, extend to other file type such as json
 
-    config_path = get_file_path(config)
-
-    if config_path.exists():
-        typer.secho(
-            f"⚠️  '{config_path}' already exists. Aborting.", fg=typer.colors.YELLOW
-        )
+    if check_valid_type(type):
+        config_path = get_file_path(config, type)
+    else:
+        typer.secho("❌ Incorrect file type.", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    generate_config_yaml(config_path, config_name=config)
+    if check_existing_config(config):
+        typer.secho(f"⚠️  '{config}' config already exists.", fg=typer.colors.YELLOW)
+        raise typer.Exit(code=1)
+
+    try:
+        generate_config(
+            config_path,
+            type,
+            config_name=config,
+        )
+    except Exception as e:
+        typer.secho(f"❌  Failed to generate config: {e}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
 
     typer.secho(
-        f"✅ Generated starter '{config_path}' successfully!", fg=typer.colors.GREEN
+        f"✅ Generated starter config in '{config_path}' successfully!",
+        fg=typer.colors.GREEN,
     )
 
 
@@ -39,17 +59,21 @@ def init(config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config f
 def validate(
     config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file")
 ):
-    config_path = get_file_path(config)
+    """
+    Validates a config file
+    """
+    typer.secho("Checking config...")
 
-    if not os.path.exists(config_path):
-        typer.secho(f"❌ Config file not found: {config_path}", fg=typer.colors.RED)
+    if not check_existing_config(config):
+        typer.secho(f"❌ Config file not found: '{config}'", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
+    file_paths = glob.glob(os.path.join(CONFIGS_DIR, f"{config}.*"))
+
     try:
-        with open(config_path, "r") as f:
-            config = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        typer.secho(f"❌ Invalid YAML: {e}", fg=typer.colors.RED)
+        config = load_config(file_paths[0])
+    except Exception as e:
+        typer.secho(f"❌ Failed to load '{config}': {e}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
     # Check for expected keys in the config
@@ -87,29 +111,30 @@ def validate(
 
 @app.command()
 def serve(
-    config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config file"),
-    env: str = typer.Option("prod", help="Define production or env"),
-    watch: bool = typer.Option(False, help="Enable auto-reload"),
+    config: str = typer.Argument(DEFAULT_CONFIG, help="Name of the config"),
+    env: str = typer.Option(
+        ..., help="Define production or dev environment [dev, prod]"
+    ),
 ):
-    config_path = get_file_path(config)
     """Start the FastBFF REST server."""
-    if not os.path.exists(config_path):
-        typer.secho(
-            f"❌ Config file not found: {config_path}, use fastbff init <name> to initialise a config file.",
-            fg=typer.colors.RED,
-            err=True,
-        )
-        raise typer.Exit(code=1)
+
+    validate(config)
+
+    file_paths = glob.glob(os.path.join(CONFIGS_DIR, f"{config}.*"))
 
     try:
-        config = load_config(config_path)
+        config = load_config(file_paths[0])
     except Exception as e:
         typer.secho(f"❌ Failed to load config: {e}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1)
 
-    config = load_config(config_path)
     app_instance, host, port, log_level = create_app(config, env)
-    uvicorn.run(app_instance, host=host, port=port, log_level=log_level, reload=watch)
+
+    try:
+        uvicorn.run(app_instance, host=host, port=port, log_level=log_level)
+    except Exception as e:
+        typer.secho(f"❌ Failed to start server: {e}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":
